@@ -1,0 +1,45 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from keras.models import Sequential
+from keras.layers import Dense
+#
+df = pd.read_csv('/content/dl1dataset.csv')
+df=df.dropna()
+#
+df.head()
+#
+X = df.drop('MEDV', axis=1).values
+y = df['MEDV'].values
+#
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+#
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+#
+model = Sequential()
+model.add(Dense(64, activation='relu', input_shape=(X_train.shape[1],)))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(1))
+#
+model.compile(loss='mean_squared_error', optimizer='adam')
+#
+model.compile(loss='mean_squared_error', optimizer='adam')
+
+model.fit(X_train, y_train, epochs=100, batch_size=32, verbose=1)
+
+train_loss = model.evaluate(X_train, y_train, verbose=0)
+test_loss = model.evaluate(X_test, y_test, verbose=0)
+print('Train Loss:', train_loss)
+print('Test Loss:', test_loss)
+#
+mse = model.evaluate(X_test, y_test, verbose=0)
+print('Mean Squared Error:', mse)
+#
+new_data = np.array([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 0.1, 0.2, 0.3])
+
+new_data_scaled = scaler.transform([new_data])
+prediction = model.predict([new_data_scaled])
+print('Predicted price:', prediction)
